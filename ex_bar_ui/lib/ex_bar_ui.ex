@@ -1,18 +1,20 @@
 defmodule ExBarUi do
   @moduledoc """
-  Documentation for ExBarUi.
+  Starter application using the Scenic framework.
   """
 
-  @doc """
-  Hello world.
+  def start(_type, _args) do
+    import Supervisor.Spec, warn: false
 
-  ## Examples
+    # load the viewport configuration from config
+    main_viewport_config = Application.get_env(:ex_bar_ui, :viewport)
 
-      iex> ExBarUi.hello()
-      :world
-
-  """
-  def hello do
-    :world
+    # start the application with the viewport
+    children = [
+      supervisor(ExBarUi.Sensor.Supervisor, []),
+      supervisor(Scenic, [viewports: [main_viewport_config]]),
+    ]
+    Supervisor.start_link(children, strategy: :one_for_one)
   end
+
 end
